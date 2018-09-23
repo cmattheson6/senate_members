@@ -29,5 +29,6 @@ class GenSenateSpider(scrapy.Spider):
                 'state': state
                 }
             
+            
             # then send it to the pipeline
             yield pol_dict;
