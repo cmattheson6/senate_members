@@ -22,6 +22,7 @@ import google.auth
 
 class SenateMembersPipeline(object):
     def process_item(self, item, spider):
+        # Pull in the spider service account info for authorization
         cred_dict = {
             "auth_provider_x509_cert_url": spider.settings.get('auth_provider_x509_cert_url'),
             "auth_uri": spider.settings.get('auth_uri'),
@@ -35,34 +36,30 @@ class SenateMembersPipeline(object):
             "type": spider.settings.get('account_type')
             }
         print(cred_dict)
-        cred_json = json.dumps(cred_dict)
-               
-        # Create a temporary file here
-        fd, path = tempfile.mkstemp(suffix='.json')
-        print(path)
 
-        # Then use a 'with open' statement as shown in the stackoverflow comments
-        with os.fdopen(fd, 'w') as tmp:
-            json.dump(cred_dict, tmp)
-            tmp.close()
-
-        os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = path
-        
-        # quick check to make sure everything is good
-        print(os.path.exists(path))
-        credentials, project_id = google.auth.default()
-        print(project_id)
+        # Run the authorization and receive a set of credentials back from Google Cloud
+        credentials = service_account.Credentials.from_service_account_info(cred_dict)
         print(credentials)
-         
-        print(os.path.exists(path))
-        publisher = pubsub.PublisherClient()
+        print("I haven't set up the client yet, but I built the credentials!")
         
+        # Set up the Google client and explicitly use the credentials you just received
+        publisher = pubsub.PublisherClient(credentials = credentials)
+        print(publisher)
+        print("The client was set up!")
+        
+        # Publish the item to the designated Pub/Sub topic
         topic = 'projects/{project_id}/topics/{topic}'.format(
              project_id='politics-data-tracker-1',
-             topic='') ###TO DO: FILL THIS IN IF/WHEN I MAKE A NEW TOPIC
-        publisher.publish(topic, b'This is a representative in the Senate.', 
+             topic='house_pols')
+        project_id = 'politics-data-tracker-1'
+        topic_name = 'senate_pols'
+        topic_path = publisher.topic_path(project_id, topic_name)
+        data = u'This is a representative in the Senate.'
+        data = data.encode('utf-8')
+        print("The topic was built!")
+        publisher.publish(topic_path, data=data,
                           first_name = item['first_name'],
                           last_name = item['last_name'],
                           party = item['party'],
                           state = item['state'])
-        os.remove(path)
+        print("We published! WOOOO!")
