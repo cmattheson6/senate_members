@@ -11,4 +11,7 @@ import scrapy
 class SenateMembersItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
-    pass
+    first_name = scrapy.Field()
+    last_name = scrapy.Field()
+    party = scrapy.Field()
+    state = scrapy.Field()
