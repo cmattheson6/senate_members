@@ -4,12 +4,11 @@ import scrapy
 
 class GenSenateSpider(scrapy.Spider):
     name = 'gen_senate'
-    allowed_domains = ['http://www.senate.gov/general/contact_information/senators_cfm.xml']
-    start_url = 'http://www.senate.gov/general/contact_information/senators_cfm.xml'
     
     # sends a request to the senate page to pull date
     def start_requests(self):
-            yield scrapy.Request(url = start_url, callback = self.parse)
+        start_url = 'http://www.senate.gov/general/contact_information/senators_cfm.xml'
+        yield scrapy.Request(url = start_url, callback = self.parse)
             
     # pulls the needed data out of the senate page
     def parse(self, response):
