@@ -35,6 +35,7 @@ class SenateMembersPipeline(object):
             "token_uri": spider.settings.get('token_uri'),
             "type": spider.settings.get('account_type')
             }
+        cred_dict['private_key'] = cred_dict['private_key'].replace('\\n', '\n')
         print(cred_dict)
 
         # Run the authorization and receive a set of credentials back from Google Cloud
@@ -48,9 +49,6 @@ class SenateMembersPipeline(object):
         print("The client was set up!")
         
         # Publish the item to the designated Pub/Sub topic
-        topic = 'projects/{project_id}/topics/{topic}'.format(
-             project_id='politics-data-tracker-1',
-             topic='house_pols')
         project_id = 'politics-data-tracker-1'
         topic_name = 'senate_pols'
         topic_path = publisher.topic_path(project_id, topic_name)
