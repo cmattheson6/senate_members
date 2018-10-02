@@ -13,7 +13,7 @@ class GenSenateSpider(scrapy.Spider):
             
     # pulls the needed data out of the senate page
     def parse(self, response):
-        print(response.body())
+#         print(response.body())
         # get each individual member and parse out information
         for i in response.xpath("./member"):
             first_name = response.xpath("./first_name").extract_first()
