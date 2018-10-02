@@ -8,7 +8,8 @@ class GenSenateSpider(scrapy.Spider):
     # sends a request to the senate page to pull date
     def start_requests(self):
         start_url = 'http://www.senate.gov/general/contact_information/senators_cfm.xml'
-        yield scrapy.Request(url = start_url, callback = self.parse)
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36'}
+        yield scrapy.Request(url = start_url, callback = self.parse, headers = headers)
             
     # pulls the needed data out of the senate page
     def parse(self, response):
