@@ -13,6 +13,11 @@ class GenSenateSpider(scrapy.Spider):
             
     # pulls the needed data out of the senate page
     def parse(self, response):
+        if response.status == 403:
+            yield scrapy.Request(url = start_url, callback = self.parse, headers = headers)
+        else:
+            print(response.status)
+            pass;
 #         print(response.body())
         # get each individual member and parse out information
         for i in response.xpath("./member"):
