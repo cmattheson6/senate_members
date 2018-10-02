@@ -18,7 +18,7 @@ class GenSenateSpider(scrapy.Spider):
         else:
             print(response.status)
             pass;
-#         print(response.body())
+        print(response.body)
         # get each individual member and parse out information
         for i in response.xpath("./member"):
             first_name = response.xpath("./first_name").extract_first()
