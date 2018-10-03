@@ -18,13 +18,17 @@ class GenSenateSpider(scrapy.Spider):
         else:
             print(response.status)
             pass;
-        print(response.body)
+#         print(response.body)
         # get each individual member and parse out information
         for i in response.xpath("./member"):
             first_name = response.xpath("./first_name").extract_first()
+            print(first_name)
             last_name = response.xpath("./last_name/text()").extract_first()
+            print(last_name)
             party = response.xpath("./party/text()").extract_first()
+            print(party)
             state = response.xpath("./state/text()").extract_first()
+            print(state)
             
             # build a dictionary for each member
             pol_dict = {
