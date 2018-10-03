@@ -21,14 +21,14 @@ class GenSenateSpider(scrapy.Spider):
 #         print(response.body)
         # get each individual member and parse out information
         for i in response.xpath("./member"):
-            print(i)
-            first_name = response.xpath("/first_name")
+            print(i.extract_first())
+            first_name = response.xpath("/first_name").extract_first()
             print(first_name)
-            last_name = response.xpath("/last_name")
+            last_name = response.xpath("/last_name").extract_first()
             print(last_name)
-            party = response.xpath("/party")
+            party = response.xpath("/party").extract_first()
             print(party)
-            state = response.xpath("/state")
+            state = response.xpath("/state").extract_first()
             print(state)
             
             # build a dictionary for each member
