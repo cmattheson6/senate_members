@@ -61,3 +61,5 @@ class SenateMembersPipeline(object):
                           party = item['party'],
                           state = item['state'])
         print("We published! WOOOO!")
+        
+        return item;
