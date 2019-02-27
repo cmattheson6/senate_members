@@ -1,28 +1,23 @@
-# -*- coding: utf-8 -*-
+"""
+This pipeline will upload all items from the spiders to the proper Pub/Sub topic.
+The rest of the processing will take place in Dataflow.
+"""
 
-# Define your item pipelines here
-#
-# Don't forget to add your pipeline to the ITEM_PIPELINES setting
-# See: https://doc.scrapy.org/en/latest/topics/item-pipeline.html
+
 
 #import necessary modules
-import datetime
-from datetime import date
-import time
 from google.cloud import pubsub
 from google.oauth2 import service_account
-import subprocess
-import scrapy
-import scrapy.crawler
-from scrapy.utils.project import get_project_settings
-import json
-import os
-import tempfile
-import google.auth
+import logging
+
 
 class SenateMembersPipeline(object):
     def process_item(self, item, spider):
-        # Pull in the spider service account info for authorization
+        """We need to establish a an authorized connection to Google Cloud in order to upload to Google Pub/Sub.
+        In order to host the spiders on Github, the service account credentials are housed on the Scrapy platform
+        and dynamically created in the script."""
+
+        # Pull all of the credential info from the Scrapy platform into a dictionary.
         cred_dict = {
             "auth_provider_x509_cert_url": spider.settings.get('auth_provider_x509_cert_url'),
             "auth_uri": spider.settings.get('auth_uri'),
@@ -35,31 +30,29 @@ class SenateMembersPipeline(object):
             "token_uri": spider.settings.get('token_uri'),
             "type": spider.settings.get('account_type')
             }
+        logging.info('Credentials downloaded from Scrapy server.')
         cred_dict['private_key'] = cred_dict['private_key'].replace('\\n', '\n')
-        print(cred_dict)
 
-        # Run the authorization and receive a set of credentials back from Google Cloud
+        # Build a Credentials object from the above dictionary. This will properly allow access as part of a
+        # Google Cloud Client.
+        logging.info('Credentials object created.')
         credentials = service_account.Credentials.from_service_account_info(cred_dict)
-        print(credentials)
-        print("I haven't set up the client yet, but I built the credentials!")
-        
-        # Set up the Google client and explicitly use the credentials you just received
+
+        # Create Publisher client.
         publisher = pubsub.PublisherClient(credentials = credentials)
-        print(publisher)
-        print("The client was set up!")
-        
-        # Publish the item to the designated Pub/Sub topic
+        logging.info('Publisher Client created.')
+
+        # Set location of proper publisher topic
         project_id = 'politics-data-tracker-1'
         topic_name = 'senate_pols'
         topic_path = publisher.topic_path(project_id, topic_name)
-        data = u'This is a representative in the Senate.'
+        data = u'This is a representative in the Senate.' #Consider how to better use this.
         data = data.encode('utf-8')
-        print("The topic was built!")
         publisher.publish(topic_path, data=data,
                           first_name = item['first_name'],
                           last_name = item['last_name'],
                           party = item['party'],
                           state = item['state'])
-        print("We published! WOOOO!")
+        logging.info('Published item: {0}'.format(item))
         
-        return item;
+        yield item;
