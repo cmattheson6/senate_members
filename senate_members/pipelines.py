@@ -55,4 +55,4 @@ class SenateMembersPipeline(object):
                           state = item['state'])
         logging.info('Published item: {0}'.format(item))
         
-        yield item;
+        yield item
