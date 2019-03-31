@@ -40,11 +40,16 @@ class GenSenateSpider(scrapy.Spider):
             state = i.xpath("./state/text()").extract_first()
 
             # Combine all parts of the senator into an Item for proper upload.
-            senator_item = SenateMembersItem()
-            senator_item['first_name'] = first_name
-            senator_item['last_name'] = last_name
-            senator_item['party'] = party
-            senator_item['state'] = state
+            senator_item = SenateMembersItem(
+                first_name = first_name,
+                last_name = last_name,
+                party = party,
+                state = state
+            )
+#             senator_item['first_name'] = first_name
+#             senator_item['last_name'] = last_name
+#             senator_item['party'] = party
+#             senator_item['state'] = state
             logging.info('New Senator: {0}'.format(senator_item))
             # yields the Item, which will then get sent to the Scrapy pipeline to send to Pub/Sub.
             yield senator_item;
