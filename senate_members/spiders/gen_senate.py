@@ -50,6 +50,6 @@ class GenSenateSpider(scrapy.Spider):
 #             senator_item['last_name'] = last_name
 #             senator_item['party'] = party
 #             senator_item['state'] = state
-            logging.info('New Senator: {0}'.format(senator_item))
+            logging.info('New Senator: {0}'.format(type(senator_item)))
             # yields the Item, which will then get sent to the Scrapy pipeline to send to Pub/Sub.
             yield senator_item;
